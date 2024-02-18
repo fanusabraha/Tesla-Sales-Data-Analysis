@@ -6,34 +6,37 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class SalesCategoriser {
+public class SalesSummary {
 
-    public  void SalesReport(String CarModelFilename,String carmodel) throws FileNotFoundException {
-        Map<Integer, Integer> yearllyreport = new HashMap<>();
-        Map<LocalDate,Integer> monthlyreport = FileService.ReadingtheFile(CarModelFilename);
+    public  void SalesReport(String carModelFilename,String carModel) throws FileNotFoundException {
 
-       yearllyreport.put(monthlyreport.entrySet()
+        System.out.println(carModel + " Yearly Sales Report \n");
+
+        Map<Integer, Integer> yearlyReport = new HashMap<>();
+        Map<LocalDate,Integer> monthlyReport = FileService.readingTheFile(carModelFilename);
+
+       yearlyReport.putAll(monthlyReport.entrySet()
                 .stream()
                 .collect(Collectors.groupingBy(entry -> entry.getKey().getYear(), Collectors.summingInt(Map.Entry::getValue))));
 
-        yearllyreport.entrySet()
+        yearlyReport.entrySet()
                 .forEach(entry -> System.out.println(entry.getKey() + " -> " + entry.getValue()));
 
-        String bestMonth = monthlyreport.entrySet()
+        String bestMonth = monthlyReport.entrySet()
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .flatMap(entry -> Optional.ofNullable(entry.getKey().format(DateTimeFormatter.ofPattern("yyyy-MM"))))
                 .orElse("N/A");
-        //String maximumMonthanothermethod = monthlyreport.entrySet().stream().reduce(Integer::max).get();
-        String worstMonth = monthlyreport.entrySet()
+        //String maximumMonthanothermethod = monthlyReport.entrySet().stream().reduce(Integer::max).get();
+        String worstMonth = monthlyReport.entrySet()
                 .stream()
                 .min(Map.Entry.comparingByValue())
                 .flatMap(entry -> Optional.ofNullable(entry.getKey().format(DateTimeFormatter.ofPattern("yyyy-MM"))))
                 .orElse("N/A");
 
-        System.out.println(carmodel + " Yearly Sales Report \n");
-        System.out.println("The best month for " + carmodel + " was: " + bestMonth);
-        System.out.println("The worst month for " + carmodel + " was: " + worstMonth);
+        System.out.println(carModel + " Yearly Sales Report \n");
+        System.out.println("The best month for " + carModel + " was: " + bestMonth);
+        System.out.println("The worst month for " + carModel + " was: " + worstMonth);
         System.out.println();
 
     }
